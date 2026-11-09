@@ -1,0 +1,23 @@
+{% assign l = include.lang | default: "en" %}
+{% assign t = site.data.strings[l] %}
+{% assign posts = site.posts | where: "lang", l %}
+{% if include.limit %}{% assign posts = posts | slice: 0, include.limit %}{% endif %}
+{% if posts.size == 0 %}
+  <p class="empty-state">{{ t.blog.empty }}</p>
+{% else %}
+<ul class="post-list">
+  {% for post in posts %}
+  <li class="post-card">
+    <a class="post-card-link" href="{{ post.url | relative_url }}">
+      <div class="post-card-meta">
+        <time datetime="{{ post.date | date_to_xmlschema }}">{% include date.html date=post.date lang=l %}</time>
+        {% if post.tags and post.tags.size > 0 %}<span class="post-card-tag">{{ post.tags | first }}</span>{% endif %}
+      </div>
+      <h3>{{ post.title }}</h3>
+      <p>{% if post.description %}{{ post.description }}{% else %}{{ post.excerpt | strip_html | truncate: 180 }}{% endif %}</p>
+      <span class="post-card-more">{{ t.blog.read_more }} →</span>
+    </a>
+  </li>
+  {% endfor %}
+</ul>
+{% endif %}

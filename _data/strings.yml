@@ -1,0 +1,65 @@
+en:
+  html_lang: en
+  nav:
+    about: About
+    research: Research
+    experience: Experience
+    education: Education
+    awards: Awards
+    blog: Blog
+    contact: Contact
+  switch_code: IT
+  switch_label: Leggi in italiano
+  theme_toggle: Toggle dark mode
+  skip: Skip to content
+  menu_open: Open menu
+  menu_close: Close menu
+  back_top: Back to top
+  footer_location: Milan, Italy
+  blog:
+    eyebrow: Blog
+    title: Notes on innovation, AI and social impact
+    intro: Essays and short notes on entrepreneurship, innovation management, artificial intelligence and development economics. Written in English; some posts are also available in Italian.
+    empty: No posts yet. Check back soon.
+    read_more: Read post
+    min_read: min read
+    translation: Leggi questo articolo in italiano
+    back: All posts
+    written_by: Written by
+    tags: Topics
+    latest: Latest from the blog
+    view_all: View all posts
+  months: [January, February, March, April, May, June, July, August, September, October, November, December]
+
+it:
+  html_lang: it
+  nav:
+    about: Chi sono
+    research: Ricerca
+    experience: Esperienza
+    education: Formazione
+    awards: Premi
+    blog: Blog
+    contact: Contatti
+  switch_code: EN
+  switch_label: Read in English
+  theme_toggle: Cambia tema
+  skip: Vai al contenuto
+  menu_open: Apri il menu
+  menu_close: Chiudi il menu
+  back_top: Torna su
+  footer_location: Milano, Italia
+  blog:
+    eyebrow: Blog
+    title: Note su innovazione, IA e impatto sociale
+    intro: Saggi e brevi note su imprenditorialità, gestione dell'innovazione, intelligenza artificiale ed economia dello sviluppo. Alcuni articoli sono disponibili anche in inglese.
+    empty: Nessun articolo ancora. Torna presto.
+    read_more: Leggi l'articolo
+    min_read: min di lettura
+    translation: Read this post in English
+    back: Tutti gli articoli
+    written_by: Scritto da
+    tags: Argomenti
+    latest: Ultimi articoli dal blog
+    view_all: Vedi tutti gli articoli
+  months: [gennaio, febbraio, marzo, aprile, maggio, giugno, luglio, agosto, settembre, ottobre, novembre, dicembre]

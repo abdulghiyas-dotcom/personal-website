@@ -1,0 +1,146 @@
+{% assign lang = page.lang | default: site.default_lang %}
+{% assign t = site.data.strings[lang] %}
+{% if lang == "en" %}
+  {% assign other = "it" %}{% assign home = "/" %}{% assign other_home = "/it/" %}
+{% else %}
+  {% assign other = "en" %}{% assign home = "/it/" %}{% assign other_home = "/" %}
+{% endif %}
+{% comment %} Work out the URL of this page in the other language {% endcomment %}
+{% assign alt_url = other_home %}
+{% if page.layout == "post" %}
+  {% assign alt_url = other_home | append: "blog/" %}
+  {% if page.ref %}
+    {% assign alt_post = site.posts | where: "ref", page.ref | where: "lang", other | first %}
+    {% if alt_post %}{% assign alt_url = alt_post.url %}{% endif %}
+  {% endif %}
+{% elsif page.alt_url %}
+  {% assign alt_url = page.alt_url %}
+{% endif %}
+<!DOCTYPE html>
+<html lang="{{ t.html_lang }}">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  {% seo title=false %}
+  <title>{% if page.title and page.url != home %}{{ page.title }} — {{ site.title }}{% else %}{{ site.title }} — {% if lang == "it" %}Imprenditore e ricercatore{% else %}Entrepreneur & Researcher{% endif %}{% endif %}</title>
+  <link rel="alternate" hreflang="{{ lang }}" href="{{ page.url | absolute_url }}">
+  <link rel="alternate" hreflang="{{ other }}" href="{{ alt_url | absolute_url }}">
+  <link rel="alternate" hreflang="x-default" href="{% if lang == "en" %}{{ page.url | absolute_url }}{% else %}{{ alt_url | absolute_url }}{% endif %}">
+  <link rel="icon" type="image/svg+xml" href="{{ '/assets/favicon.svg' | relative_url }}">
+  {% feed_meta %}
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ '/css/style.css' | relative_url }}">
+  <script>
+    /* Apply the saved theme before first paint to avoid a flash */
+    (function () {
+      try {
+        var s = localStorage.getItem('theme');
+        if (s === 'dark' || s === 'light') document.documentElement.setAttribute('data-theme', s);
+      } catch (e) {}
+    })();
+  </script>
+  {% if page.url == "/" %}
+  <script>
+    /* Language detection: visitors from Italy are sent to the Italian site.
+       A language the visitor chose with the EN/IT switch always wins. */
+    (function () {
+      var IT_HOME = '{{ "/it/" | relative_url }}';
+      try { if (localStorage.getItem('lang')) return; } catch (e) {}
+      if (/[?&]lang=/.test(location.search)) return;
+
+      var decided = false;
+      function decide(cc) {
+        if (decided) return;
+        decided = true;
+        try { localStorage.setItem('geo_cc', cc); } catch (e) {}
+        if (cc === 'IT') location.replace(IT_HOME + location.hash);
+      }
+      function fromBrowser() {
+        var langs = (navigator.languages || [navigator.language || '']).join(',').toLowerCase();
+        decide(/(^|,)it(-|,|$)/.test(langs) ? 'IT' : 'XX');
+      }
+
+      var cached = null;
+      try { cached = localStorage.getItem('geo_cc'); } catch (e) {}
+      if (cached) { decide(cached); return; }
+
+      var providers = [
+        { url: 'https://ipapi.co/json/', pick: function (d) { return d.country_code; } },
+        { url: 'https://ipwho.is/',      pick: function (d) { return d.country_code; } }
+      ];
+      var i = 0;
+      function next() {
+        if (decided) return;
+        if (i >= providers.length || !window.fetch) { fromBrowser(); return; }
+        var p = providers[i++];
+        var ctrl = window.AbortController ? new AbortController() : null;
+        var timer = setTimeout(function () { if (ctrl) ctrl.abort(); next(); }, 2500);
+        fetch(p.url, { signal: ctrl && ctrl.signal, credentials: 'omit' })
+          .then(function (r) { return r.ok ? r.json() : Promise.reject(); })
+          .then(function (d) {
+            clearTimeout(timer);
+            var cc = (p.pick(d) || '').toString().toUpperCase();
+            if (/^[A-Z]{2}$/.test(cc)) decide(cc); else next();
+          })
+          .catch(function () { clearTimeout(timer); next(); });
+      }
+      next();
+    })();
+  </script>
+  {% endif %}
+</head>
+<body>
+  <a class="skip-link" href="#main">{{ t.skip }}</a>
+
+  <header class="site-header" id="top">
+    <nav class="nav container" aria-label="Primary">
+      <a class="brand" href="{{ home | relative_url }}">
+        <span class="brand-mark">AK</span>
+        <span class="brand-name">{{ site.title }}</span>
+      </a>
+      <button class="nav-toggle" aria-expanded="false" aria-controls="nav-menu" aria-label="{{ t.menu_open }}" data-open="{{ t.menu_open }}" data-close="{{ t.menu_close }}">
+        <span></span><span></span><span></span>
+      </button>
+      <ul class="nav-menu" id="nav-menu">
+        {% assign h = home | relative_url %}
+        <li><a href="{{ h }}#about">{{ t.nav.about }}</a></li>
+        <li><a href="{{ h }}#research">{{ t.nav.research }}</a></li>
+        <li><a href="{{ h }}#experience">{{ t.nav.experience }}</a></li>
+        <li><a href="{{ h }}#education">{{ t.nav.education }}</a></li>
+        <li><a href="{{ h }}#awards">{{ t.nav.awards }}</a></li>
+        <li><a href="{{ home | append: 'blog/' | relative_url }}" class="{% if page.section == 'blog' %}active{% endif %}">{{ t.nav.blog }}</a></li>
+        <li><a href="{{ h }}#contact">{{ t.nav.contact }}</a></li>
+        <li class="nav-tools">
+          <a class="lang-switch" href="{{ alt_url | relative_url }}" lang="{{ other }}" hreflang="{{ other }}" data-lang="{{ other }}" title="{{ t.switch_label }}" aria-label="{{ t.switch_label }}">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+            {{ t.switch_code }}
+          </a>
+          <button class="theme-toggle" type="button" aria-label="{{ t.theme_toggle }}" title="{{ t.theme_toggle }}">
+            <svg class="icon-sun" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
+            <svg class="icon-moon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+          </button>
+        </li>
+      </ul>
+    </nav>
+  </header>
+
+  <main id="main">
+    {{ content }}
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer-inner">
+      <p>&copy; <span id="year">{{ site.time | date: "%Y" }}</span> {{ site.title }}. {{ t.footer_location }}.</p>
+      <div class="footer-links">
+        <a href="{{ home | append: 'blog/' | relative_url }}">{{ t.nav.blog }}</a>
+        <a href="{{ alt_url | relative_url }}" data-lang="{{ other }}" lang="{{ other }}">{{ t.switch_label }}</a>
+        <a href="#top" class="back-top">{{ t.back_top }} ↑</a>
+      </div>
+    </div>
+  </footer>
+
+  <script src="{{ '/js/main.js' | relative_url }}"></script>
+</body>
+</html>

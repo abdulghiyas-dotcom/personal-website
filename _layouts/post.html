@@ -1,0 +1,54 @@
+---
+layout: default
+section: blog
+---
+{% assign lang = page.lang | default: site.default_lang %}
+{% assign t = site.data.strings[lang] %}
+{% if lang == "en" %}{% assign home = "/" %}{% assign other = "it" %}{% else %}{% assign home = "/it/" %}{% assign other = "en" %}{% endif %}
+{% assign words = content | strip_html | number_of_words %}
+{% assign minutes = words | divided_by: 200 | at_least: 1 %}
+{% assign alt_post = nil %}
+{% if page.ref %}{% assign alt_post = site.posts | where: "ref", page.ref | where: "lang", other | first %}{% endif %}
+
+<article class="post">
+  <header class="post-header">
+    <div class="container narrow">
+      <a class="crumb" href="{{ home | append: 'blog/' | relative_url }}">← {{ t.blog.back }}</a>
+      <h1 class="post-title">{{ page.title }}</h1>
+      {% if page.description %}<p class="post-description">{{ page.description }}</p>{% endif %}
+      <div class="post-meta">
+        <time datetime="{{ page.date | date_to_xmlschema }}">{% include date.html date=page.date lang=lang %}</time>
+        <span aria-hidden="true">·</span>
+        <span>{{ minutes }} {{ t.blog.min_read }}</span>
+        {% if page.tags and page.tags.size > 0 %}
+        <span aria-hidden="true">·</span>
+        <ul class="post-tags" aria-label="{{ t.blog.tags }}">
+          {% for tag in page.tags %}<li>{{ tag }}</li>{% endfor %}
+        </ul>
+        {% endif %}
+      </div>
+      {% if alt_post %}
+      <p class="post-translation">
+        <a href="{{ alt_post.url | relative_url }}" lang="{{ other }}" hreflang="{{ other }}" data-lang="{{ other }}">{{ t.blog.translation }} →</a>
+      </p>
+      {% endif %}
+    </div>
+  </header>
+
+  <div class="container narrow">
+    <div class="post-content prose">
+      {{ content }}
+    </div>
+
+    <footer class="post-footer">
+      <div class="author-card">
+        <span class="author-mark" aria-hidden="true">AK</span>
+        <div>
+          <p class="author-name">{{ t.blog.written_by }} {{ site.author }}</p>
+          <p class="author-bio">{% if lang == "it" %}Fondatore di SheConnects. Ricerca su innovazione sociale, gestione dell'innovazione e intelligenza artificiale.{% else %}Founder of SheConnects. Research on social innovation, innovation management and artificial intelligence.{% endif %}</p>
+        </div>
+      </div>
+      <a class="btn btn-ghost" href="{{ home | append: 'blog/' | relative_url }}">{{ t.blog.back }}</a>
+    </footer>
+  </div>
+</article>

@@ -5,12 +5,6 @@
 
   /* ---------------- Theme toggle ---------------- */
   var themeBtn = document.querySelector('.theme-toggle');
-  var stored = null;
-  try { stored = localStorage.getItem('theme'); } catch (e) { /* storage unavailable */ }
-  if (stored === 'dark' || stored === 'light') {
-    root.setAttribute('data-theme', stored);
-  }
-
   function currentTheme() {
     var explicit = root.getAttribute('data-theme');
     if (explicit) return explicit;
@@ -32,7 +26,7 @@
     toggle.addEventListener('click', function () {
       var open = menu.classList.toggle('open');
       toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
-      toggle.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
+      toggle.setAttribute('aria-label', open ? (toggle.dataset.close || 'Close menu') : (toggle.dataset.open || 'Open menu'));
     });
     menu.querySelectorAll('a').forEach(function (link) {
       link.addEventListener('click', function () {
@@ -42,9 +36,22 @@
     });
   }
 
+  /* ---------------- Language preference ----------------
+     When the visitor picks a language explicitly, remember it so the
+     geo-detection on the home page never overrides their choice. */
+  document.querySelectorAll('a[data-lang]').forEach(function (link) {
+    link.addEventListener('click', function () {
+      try { localStorage.setItem('lang', link.getAttribute('data-lang')); } catch (e) { /* ignore */ }
+    });
+  });
+
   /* ---------------- Active nav link on scroll ---------------- */
   var sections = Array.prototype.slice.call(document.querySelectorAll('main section[id]'));
-  var navLinks = Array.prototype.slice.call(document.querySelectorAll('.nav-menu a[href^="#"]'));
+  var navLinks = Array.prototype.slice.call(document.querySelectorAll('.nav-menu a[href*="#"]')).filter(function (a) {
+    var href = a.getAttribute('href');
+    var path = href.split('#')[0];
+    return path === '' || path === location.pathname;
+  });
 
   function setActive() {
     var offset = 120;
@@ -53,7 +60,8 @@
       if (sections[i].getBoundingClientRect().top - offset <= 0) current = sections[i].id;
     }
     navLinks.forEach(function (link) {
-      link.classList.toggle('active', current !== null && link.getAttribute('href') === '#' + current);
+      var target = link.getAttribute('href').split('#')[1];
+      link.classList.toggle('active', current !== null && target === current);
     });
   }
   if (sections.length && navLinks.length) {
@@ -62,7 +70,7 @@
   }
 
   /* ---------------- Reveal on scroll ---------------- */
-  var revealTargets = document.querySelectorAll('.pub, .card, .tl-item, .award-list li, .contact-list li, .section-head');
+  var revealTargets = document.querySelectorAll('.pub, .card, .tl-item, .award-list li, .contact-list li, .section-head, .post-card');
   if ('IntersectionObserver' in window) {
     revealTargets.forEach(function (el) { el.classList.add('reveal'); });
     var io = new IntersectionObserver(function (entries) {

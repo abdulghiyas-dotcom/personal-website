@@ -1,0 +1,73 @@
+# Site settings
+title: Abdul Kamyar
+description: >-
+  Abdul Kamyar is the founder of SheConnects and a researcher in social innovation,
+  innovation management, entrepreneurship, artificial intelligence and macroeconomics,
+  based in Milan, Italy.
+author: Abdul Kamyar
+email: abdul.ghiyas@gmail.com
+linkedin: https://www.linkedin.com/in/abdul-kamyar/
+sheconnects: https://www.sheconnects.work/
+
+# Hosting. If you rename the repository to abdulghiyas-dotcom.github.io,
+# set baseurl to "" so the site is served from the root.
+url: https://abdulghiyas-dotcom.github.io
+baseurl: /personal-website
+
+# Languages: "en" is the default and lives at /, "it" lives at /it/
+languages: [en, it]
+default_lang: en
+
+# Build
+markdown: kramdown
+highlighter: rouge
+permalink: /blog/:year/:month/:day/:title/
+timezone: Europe/Rome
+excerpt_separator: <!--more-->
+future: false
+
+plugins:
+  - jekyll-seo-tag
+  - jekyll-sitemap
+  - jekyll-feed
+
+feed:
+  path: feed.xml
+
+# Posts in _posts/en are English, posts in _posts/it are Italian.
+# Authors only need to write title (and optionally description, ref, tags).
+defaults:
+  - scope:
+      path: "_posts/en"
+      type: posts
+    values:
+      lang: en
+      layout: post
+      permalink: /blog/:year/:month/:day/:title/
+  - scope:
+      path: "_posts/it"
+      type: posts
+    values:
+      lang: it
+      layout: post
+      permalink: /it/blog/:year/:month/:day/:title/
+  - scope:
+      path: ""
+    values:
+      lang: en
+      layout: default
+  - scope:
+      path: "it"
+    values:
+      lang: it
+
+exclude:
+  - README.md
+  - Gemfile
+  - Gemfile.lock
+  - vendor
+  - node_modules
+  - .jekyll-cache
+
+# No default theme: the site ships its own layouts and CSS.
+theme: null

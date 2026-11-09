@@ -1,0 +1,1 @@
+{% assign d = include.date %}{% assign l = include.lang | default: "en" %}{% assign m = d | date: "%-m" | minus: 1 %}{% if l == "it" %}{{ d | date: "%-d" }} {{ site.data.strings.it.months[m] }} {{ d | date: "%Y" }}{% else %}{{ site.data.strings.en.months[m] }} {{ d | date: "%-d" }}, {{ d | date: "%Y" }}{% endif %}
